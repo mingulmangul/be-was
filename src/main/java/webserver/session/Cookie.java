@@ -6,17 +6,13 @@ public class Cookie {
 	private final String value;
 	private final Integer maxAge;
 
-	private Cookie(String key, String value, Integer maxAge) {
+	public Cookie(String key, String value, Integer maxAge) {
 		this.key = key;
 		this.value = value;
 		this.maxAge = maxAge;
 	}
 
-	public static Cookie of(String key, String value, Integer maxAge) {
-		return new Cookie(key, value, maxAge);
-	}
-
-	public String toCookieString() {
+	public String toCookieFieldValue() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(key).append("=").append(value)
 			.append("; Path=/");

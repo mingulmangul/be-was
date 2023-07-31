@@ -1,6 +1,7 @@
 package webapp.db;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -22,7 +23,7 @@ public class Database {
 		return user.getPassword().equals(password);
 	}
 
-	public static Collection<User> findAll() {
-		return users.values();
+	public static List<User> findAll() {
+		return new ArrayList<>(users.values());
 	}
 }

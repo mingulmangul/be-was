@@ -8,6 +8,7 @@ public class Session {
 	public static final Integer MAX_AGE = 7200;
 	private final UUID sessionId;
 	private final String userId;
+	// TODO: createdAt 추가
 
 	private Session(UUID sessionId, String userId) {
 		this.sessionId = sessionId;
@@ -18,8 +19,8 @@ public class Session {
 		return new Session(UUID.randomUUID(), userId);
 	}
 
-	public String getSessionId() {
-		return sessionId.toString();
+	public UUID getSessionId() {
+		return sessionId;
 	}
 
 	public String getUserId() {

@@ -1,15 +1,13 @@
 package webserver.http.message;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 
-import webserver.resolver.utils.FileMapper;
 import webserver.session.Cookie;
+import webserver.view.View;
 
 public class HttpResponse {
 
@@ -79,12 +77,7 @@ public class HttpResponse {
 		public HttpResponseBuilder body(Path resourcePath) {
 			try {
 				this.body = Files.readAllBytes(resourcePath);
-				String contentType = Files.probeContentType(resourcePath);
-				if (contentType.startsWith("text")) {
-					contentType = contentType.concat(";charset=UTF-8");
-				}
-				this.headerFields.setHeaderField(CONTENT_TYPE, contentType);
-				this.headerFields.setHeaderField(CONTENT_LENGTH, String.valueOf(body.length));
+				setContentTypeAndLength(Files.probeContentType(resourcePath), body.length);
 				return this;
 			} catch (IOException e) {
 				this.status = HttpStatus.SERVER_ERROR;
@@ -92,17 +85,26 @@ public class HttpResponse {
 			}
 		}
 
-		public HttpResponseBuilder view(String viewName) {
+		public HttpResponseBuilder view(View view) {
 			if (this.headerFields.getValue(LOCATION) != null) {
 				this.headerFields.removeHeaderField(LOCATION);
 			}
 			try {
-				File view = FileMapper.findFile(viewName + ".html");
-				return body(view.toPath());
-			} catch (FileNotFoundException e) {
+				this.body = view.render();
+				setContentTypeAndLength("text/html", body.length);
+				return this;
+			} catch (IOException e) {
 				status = HttpStatus.SERVER_ERROR;
 				return this;
 			}
+		}
+
+		private void setContentTypeAndLength(String contentType, int contentLength) {
+			if (contentType.startsWith("text")) {
+				contentType = contentType.concat(";charset=UTF-8");
+			}
+			this.headerFields.setHeaderField(CONTENT_TYPE, contentType);
+			this.headerFields.setHeaderField(CONTENT_LENGTH, String.valueOf(contentLength));
 		}
 
 		public HttpResponseBuilder redirection(String targetUrl) {
@@ -113,7 +115,7 @@ public class HttpResponse {
 		}
 
 		public HttpResponseBuilder setCookie(Cookie cookie) {
-			headerField("Set-Cookie", cookie.toCookieString());
+			headerField("Set-Cookie", cookie.toCookieFieldValue());
 			return this;
 		}
 

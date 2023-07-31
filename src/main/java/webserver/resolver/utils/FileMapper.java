@@ -11,7 +11,7 @@ public class FileMapper {
 
 	static {
 		RESOURCE_PATH_LIST.add("src/main/resources/static");
-		RESOURCE_PATH_LIST.add("src/main/resources/templates");
+		RESOURCE_PATH_LIST.add("src/main/resources/templates/");
 	}
 
 	private FileMapper() {

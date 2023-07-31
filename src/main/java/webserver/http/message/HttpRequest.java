@@ -1,5 +1,11 @@
 package webserver.http.message;
 
+import java.util.Map;
+import java.util.UUID;
+
+import webserver.http.utils.HttpMessageParser;
+import webserver.session.Session;
+
 public class HttpRequest {
 
 	private final HttpMethod httpMethod;
@@ -40,6 +46,19 @@ public class HttpRequest {
 
 	public boolean isMethodPost() {
 		return httpMethod == HttpMethod.POST;
+	}
+
+	public UUID getSessionId() {
+		String cookieFieldValue = headerFields.getValue("Cookie");
+		if (cookieFieldValue == null) {
+			return null;
+		}
+		Map<String, String> cookieMap = HttpMessageParser.parseCookies(cookieFieldValue);
+		String sessionId = cookieMap.get(Session.SID);
+		if (sessionId == null) {
+			return null;
+		}
+		return UUID.fromString(sessionId);
 	}
 
 }

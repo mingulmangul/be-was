@@ -50,14 +50,14 @@ public class HttpMessageParser {
 		Map<String, String> parameterMap = new HashMap<>();
 		String[] tokens = urlString.split("\\?");
 		if (tokens.length >= 2) {
-			parameterMap = parseParameter(tokens[1]);
+			parameterMap = parseParameter(tokens[1], "&");
 		}
 		return new URL(tokens[0], parameterMap);
 	}
 
-	private static Map<String, String> parseParameter(String str) {
+	private static Map<String, String> parseParameter(String str, String delimiter) {
 		Map<String, String> parameterMap = new HashMap<>();
-		String[] paramList = str.split("&");
+		String[] paramList = str.split(delimiter);
 		for (String param : paramList) {
 			String[] tokens = param.split("=");
 			String key = tokens[0];
@@ -89,7 +89,11 @@ public class HttpMessageParser {
 		br.read(body, 0, contentLength);
 		String bodyString = String.valueOf(body);
 		logger.debug(bodyString);
-		return new HttpRequestBody(parseParameter(bodyString));
+		return new HttpRequestBody(parseParameter(bodyString, "&"));
+	}
+
+	public static Map<String, String> parseCookies(String cookieFieldValue) {
+		return parseParameter(cookieFieldValue, "; ");
 	}
 
 }
